@@ -4,11 +4,14 @@ import com.knn3.rt.scene.ifcondition.deserialization.CDCModel;
 import com.knn3.rt.scene.ifcondition.deserialization.CDCSchema;
 import com.knn3.rt.scene.ifcondition.func.LogConvertFunction;
 import com.knn3.rt.scene.ifcondition.func.TokenCalFunction;
+import com.knn3.rt.scene.ifcondition.model.Balance;
 import com.knn3.rt.scene.ifcondition.model.LogWrapper;
 import com.knn3.rt.scene.ifcondition.sink.MySink;
 import com.knn3.rt.scene.ifcondition.utils.JobUtils;
 import com.ververica.cdc.connectors.postgres.PostgreSQLSource;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
+import org.apache.flink.streaming.api.datastream.DataStreamSink;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.Map;
@@ -30,9 +33,9 @@ public class IfConditionJob {
         String appContract = paramMap.get("app_contract");
 
         Properties properties = new Properties();
-        // properties.setProperty("debezium.plugin.name", paramMap.get("debezium.plugin.name"));
-        properties.setProperty("debezium.slot.drop.on.stop", paramMap.get("debezium.slot.drop.on.stop"));
-        properties.setProperty("debezium.snapshot.select.statement.overrides", paramMap.get("debezium.snapshot.select.statement.overrides"));
+        properties.setProperty("plugin.name", paramMap.get("debezium.plugin.name"));
+        properties.setProperty("slot.drop.on.stop", paramMap.get("debezium.slot.drop.on.stop"));
+        properties.setProperty("snapshot.select.statement.overrides", paramMap.get("debezium.snapshot.select.statement.overrides"));
         properties.setProperty(paramMap.get("debezium.snapshot.select.statement.overrides.key"), paramMap.get("debezium.snapshot.select.statement.overrides.value"));
 
 
@@ -50,11 +53,15 @@ public class IfConditionJob {
                 .decodingPluginName(paramMap.get("debezium.plugin.name"))
                 .build();
 
-        env.addSource(cdcSource)
+        SingleOutputStreamOperator<Balance[]> stream = env.addSource(cdcSource)
                 .flatMap(new LogConvertFunction(appContract))
                 .keyBy(LogWrapper::getAddress)
-                .process(new TokenCalFunction())
-                .addSink(new MySink());
+                .process(new TokenCalFunction());
+
+
+        stream.addSink(new MySink());
+        // stream.addSink(new MySink());
+//        stream.addSink(new MySink());
         // .map(Cons.MAPPER::writeValueAsString)
         // .print();
 

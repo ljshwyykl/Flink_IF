@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.knn3</groupId>
-    <artifactId>impossible-finance-flink</artifactId>
-    <version>0.1</version>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.knn3</groupId>
+  <artifactId>impossible-finance-flink</artifactId>
+  <version>0.1</version>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
           <encoding>${project.build.sourceEncoding}</encoding>
@@ -46,7 +45,7 @@
               </filters>
               <transformers>
                 <transformer>
-                  <mainClass>org.knn3.flink.Bootstrap</mainClass>
+                  <mainClass>org.knn3.flink.IfConditionJob</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -56,6 +55,24 @@
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.mybatis</groupId>
+      <artifactId>mybatis</artifactId>
+      <version>3.5.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.5.4</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>mchange-commons-java</artifactId>
+          <groupId>com.mchange</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -68,14 +85,22 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>fastjson</artifactId>
+      <version>1.2.76</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <properties>
+    <postgresql.cdc.version>2.1.1</postgresql.cdc.version>
     <lombok.version>1.18.10</lombok.version>
     <apollo.version>1.5.1</apollo.version>
     <jpmml.version>1.4.13</jpmml.version>
     <scala.version>2.11</scala.version>
     <flink.jackson.version>2.10.1-12.0</flink.jackson.version>
     <cdh.version>3.0.0-cdh6.1.1</cdh.version>
+    <postgresql.version>42.3.3</postgresql.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <hadoop.version>2.7.5</hadoop.version>
     <scala.logging.version>3.9.2</scala.logging.version>
@@ -83,6 +108,7 @@
     <scope.type.provided>provided</scope.type.provided>
     <jedis.version>3.1.0</jedis.version>
     <junit.version>4.13.1</junit.version>
+    <web3j.version>4.8.7</web3j.version>
     <scope.type.compile>compile</scope.type.compile>
     <apache-phoenix-version>4.14.2-HBase-1.4</apache-phoenix-version>
     <hive.version>2.1.1</hive.version>
