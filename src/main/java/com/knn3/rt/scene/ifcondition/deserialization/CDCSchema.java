@@ -43,21 +43,9 @@ public class CDCSchema implements DebeziumDeserializationSchema<CDCModel> {
 
         // 注意：若valueStruct中只有after,则表明插入；若只有before，说明删除；若既有before，也有after，则代表更新
         String optType = afStruct != null && bfStruct != null ? CDCModel.UPDATE : (afStruct != null ? CDCModel.INSERT : CDCModel.DELETE);
-        switch (optType) {
-            case CDCModel.INSERT:
-                model.setAfValue(this.extractStruct(afStruct));
-                break;
-            case CDCModel.UPDATE:
-                model.setAfValue(this.extractStruct(afStruct));
-                model.setBfValue(this.extractStruct(bfStruct));
-                break;
-            case CDCModel.DELETE:
-                model.setBfValue(this.extractStruct(bfStruct));
-                break;
-            default:
-                throw new Exception("unknown opt");
-        }
         model.setOptType(optType);
+        model.setAfValue(this.extractStruct(afStruct));
+        model.setBfValue(this.extractStruct(bfStruct));
         model.setTopic(topic);
         model.setTimestamp(timestamp);
         out.collect(model);
@@ -75,6 +63,7 @@ public class CDCSchema implements DebeziumDeserializationSchema<CDCModel> {
      * @return
      */
     private String extractStruct(Struct struct) throws JsonProcessingException {
+        if (struct == null) return null;
         Map<String, Object> map = new HashMap<>();
         for (Field field : struct.schema().fields()) {
             String fieldName = field.name();
