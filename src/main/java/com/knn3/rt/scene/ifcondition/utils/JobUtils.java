@@ -20,7 +20,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 @Slf4j
 public class JobUtils {
     public static StreamExecutionEnvironment getEnv(String[] args) throws Exception {
-        JobUtils.log.info("添加命令行参数: --mode local|cluster --properties 路径");
+        JobUtils.log.info("添加命令行参数: --mode local|cluster --properties [properties路径] --checkpointUrl [checkpointUrl路径,cluster模式下必须指定] --backend [fs|rocksdb,cluster模式下必须指定]");
         StreamExecutionEnvironment env;
         ParameterTool params;
         ParameterTool argsParam = ParameterTool.fromArgs(args);

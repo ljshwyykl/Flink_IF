@@ -4,11 +4,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.UUID;
+
 @Setter
 @Getter
 @ToString
 public class StatusPublicField {
-    private String id;
+    private UUID id;
     private String chainId;
     private String contractId;
     private String tokenId;
