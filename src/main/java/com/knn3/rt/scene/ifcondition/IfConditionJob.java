@@ -30,10 +30,9 @@ public class IfConditionJob {
         String appContract = paramMap.get("app_contract");
 
         Properties properties = new Properties();
-        // properties.setProperty("debezium.plugin.name", paramMap.get("debezium.plugin.name"));
-        properties.setProperty("debezium.slot.drop.on.stop", paramMap.get("debezium.slot.drop.on.stop"));
-        properties.setProperty("debezium.snapshot.select.statement.overrides", paramMap.get("debezium.snapshot.select.statement.overrides"));
-        properties.setProperty(paramMap.get("debezium.snapshot.select.statement.overrides.key"), paramMap.get("debezium.snapshot.select.statement.overrides.value"));
+        properties.setProperty("slot.drop.on.stop", paramMap.get("slot.drop.on.stop"));
+        properties.setProperty("snapshot.select.statement.overrides", paramMap.get("snapshot.select.statement.overrides"));
+        properties.setProperty(paramMap.get("snapshot.select.statement.overrides.key"), paramMap.get("snapshot.select.statement.overrides.value"));
 
 
         DebeziumSourceFunction<CDCModel> cdcSource = PostgreSQLSource.<CDCModel>builder()
@@ -47,7 +46,7 @@ public class IfConditionJob {
                 .debeziumProperties(properties)
                 .deserializer(new CDCSchema())
                 .slotName(paramMap.get("pg_slotName"))
-                .decodingPluginName(paramMap.get("debezium.plugin.name"))
+                .decodingPluginName(paramMap.get("plugin.name"))
                 .build();
 
         env.addSource(cdcSource)
