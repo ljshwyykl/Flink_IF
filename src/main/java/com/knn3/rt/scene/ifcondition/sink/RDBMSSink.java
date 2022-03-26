@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Slf4j
-public class MySink extends RichSinkFunction<Balance[]> {
+public class RDBMSSink extends RichSinkFunction<Balance[]> {
     private static final String DCP_TABLE = "S_Impossible_Finance";
     private final static String STATUS_INSERT = "INSERT INTO public.\"F_Status\"(id,address,dcp_table,uid) VALUES(?,?,?,?) ON CONFLICT DO NOTHING;";
     private final static String STATUS_DELETE = "DELETE FROM public.\"F_Status\" where dcp_table=? and address in(?);";
@@ -78,12 +78,12 @@ public class MySink extends RichSinkFunction<Balance[]> {
                     args[i][2] = status.getDcpTable();
                     args[i][3] = status.getUid();
                 }
-                this.qr.batch(connection, MySink.STATUS_INSERT, args);
+                this.qr.batch(connection, RDBMSSink.STATUS_INSERT, args);
             }
 
             // 批量删除 F_Status
             if (delList.size() != 0)
-                this.qr.update(connection, MySink.STATUS_DELETE, MySink.DCP_TABLE, String.format("'%s'", String.join("','", delList)));
+                this.qr.update(connection, RDBMSSink.STATUS_DELETE, RDBMSSink.DCP_TABLE, String.format("'%s'", String.join("','", delList)));
 
 
             // 批量插入 S_Impossible_Finance
@@ -104,27 +104,27 @@ public class MySink extends RichSinkFunction<Balance[]> {
                     args[i][10] = finance.getBalance();
                     args[i][11] = finance.getBalance();
                 }
-                this.qr.batch(connection, MySink.FINANCE_INSERT, args);
+                this.qr.batch(connection, RDBMSSink.FINANCE_INSERT, args);
             }
 
             // 批量删除 S_Impossible_Finance
             if (delList.size() != 0)
-                this.qr.update(connection, MySink.FINANCE_DELETE, String.format("'%s'", String.join("','", delList)));
+                this.qr.update(connection, RDBMSSink.FINANCE_DELETE, String.format("'%s'", String.join("','", delList)));
 
             // 提交事务,关闭连接
             DbUtils.commitAndCloseQuietly(connection);
         } catch (SQLException e) {
             // 回滚,关闭连接
             DbUtils.rollbackAndCloseQuietly(connection);
-            MySink.log.error("delList={},insertList={}", delList, insertList);
-            MySink.log.error("发生异常,执行回滚", e);
+            RDBMSSink.log.error("delList={},insertList={}", delList, insertList);
+            RDBMSSink.log.error("发生异常,执行回滚", e);
         }
     }
 
     private Status ofStatusMsg(Balance balance, UUID id) {
         Status status = new Status();
         status.setId(UUID.randomUUID());
-        status.setDcpTable(MySink.DCP_TABLE);
+        status.setDcpTable(RDBMSSink.DCP_TABLE);
         status.setUid(id);
         status.setAddress(balance.getAddress());
         return status;
@@ -141,7 +141,7 @@ public class MySink extends RichSinkFunction<Balance[]> {
         impossibleFinance.setTokenSymbol("IF");
         impossibleFinance.setTokenName("Impossible Finance");
         impossibleFinance.setCampaignId(contractId);
-        impossibleFinance.setCampaignName(MySink.DCP_TABLE);
+        impossibleFinance.setCampaignName(RDBMSSink.DCP_TABLE);
         impossibleFinance.setBlockNumber(balance.getBlockNumber());
         impossibleFinance.setBalance(balance.getBalance());
         impossibleFinance.setIfFansTokenThreshold(true);
