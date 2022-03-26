@@ -37,6 +37,9 @@
         <logback.kafka.appender.version>0.2.0-RC2</logback.kafka.appender.version>
         <junit.version>4.13.1</junit.version>
         <flink.jackson.version>2.10.1-12.0</flink.jackson.version>
+        <web3j.version>4.8.7</web3j.version>
+        <postgresql.version>42.3.3</postgresql.version>
+        <postgresql.cdc.version>2.1.1</postgresql.cdc.version>
     </properties>
 
     <dependencies>
@@ -70,7 +73,7 @@
         <dependency>
             <groupId>com.ververica</groupId>
             <artifactId>flink-connector-postgres-cdc</artifactId>
-            <version>2.1.1</version>
+            <version>${postgresql.cdc.version}</version>
         </dependency>
         <!--log-->
         <dependency>
@@ -78,42 +81,12 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.classic.version}</version>
         </dependency>
-        <!--引入mybatis框架-->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.1</version>
-        </dependency>
         <!--postgres 驱动-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.3</version>
+            <version>${postgresql.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.5.4</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>${scope.type.test}</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
-        </dependency>
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>4.8.7</version>
-        </dependency>
-
         <dependency>
             <groupId>commons-dbutils</groupId>
             <artifactId>commons-dbutils</artifactId>
@@ -129,6 +102,39 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!--以太坊JSON RPC 接口协议封装实现-->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>${web3j.version}</version>
+        </dependency>
+
+
+        <!--引入mybatis框架-->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.1</version>
+            <scope>${scope.type.provided}</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.4</version>
+            <scope>${scope.type.provided}</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>${scope.type.test}</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.76</version>
+            <scope>${scope.type.provided}</scope>
         </dependency>
     </dependencies>
 

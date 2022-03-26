@@ -25,7 +25,7 @@ public class JobUtils {
         ParameterTool params;
         ParameterTool argsParam = ParameterTool.fromArgs(args);
         String mode = argsParam.get(Param.MODE, Mode.CLUSTER);
-        String propertiesFile = argsParam.get(Param.PROPERTIES_FILE, "生产配置文件路径");
+        String propertiesFile = argsParam.get(Param.PROPERTIES_FILE);
         switch (mode) {
             case Mode.LOCAL:
                 params = ParameterTool.fromPropertiesFile(propertiesFile);

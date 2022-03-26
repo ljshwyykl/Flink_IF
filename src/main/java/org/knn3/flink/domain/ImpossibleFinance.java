@@ -10,6 +10,8 @@ import java.math.BigInteger;
 public class ImpossibleFinance extends StatusPublicField {
     private Boolean ifFansTokenThreshold;
     private BigInteger balance;
-    public ImpossibleFinance() {}
+
+    public ImpossibleFinance() {
+    }
 
 }

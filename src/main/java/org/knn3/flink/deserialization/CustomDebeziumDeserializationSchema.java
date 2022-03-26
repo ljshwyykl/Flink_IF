@@ -47,7 +47,7 @@ public class CustomDebeziumDeserializationSchema implements DebeziumDeserializat
             if (afterStruct != null && beforeStruct != null) {
                 // 修改
                 System.out.println("Updating >>>>>>>");
-                LOGGER.info("Updated, ignored ...");
+                CustomDebeziumDeserializationSchema.LOGGER.info("Updated, ignored ...");
             } else if (afterStruct != null) {
                 // 插入
                 System.out.println("Inserting >>>>>>>");
@@ -62,14 +62,14 @@ public class CustomDebeziumDeserializationSchema implements DebeziumDeserializat
             } else if (beforeStruct != null) {
                 // 删除
                 System.out.println("Deleting >>>>>>>");
-                LOGGER.info("Deleted, ignored ...");
+                CustomDebeziumDeserializationSchema.LOGGER.info("Deleted, ignored ...");
             } else {
                 System.out.println("No this operation ...");
-                LOGGER.warn("No this operation ...");
+                CustomDebeziumDeserializationSchema.LOGGER.warn("No this operation ...");
             }
         } catch (Exception e) {
             System.out.println("Deserialize throws exception:");
-            LOGGER.error("Deserialize throws exception:", e);
+            CustomDebeziumDeserializationSchema.LOGGER.error("Deserialize throws exception:", e);
         }
         collector.collect(resJson);
     }

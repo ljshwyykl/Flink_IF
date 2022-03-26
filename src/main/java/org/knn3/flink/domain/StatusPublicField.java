@@ -16,5 +16,6 @@ public class StatusPublicField {
     private String campaignName;
     private Integer blockNumber;
 
-    public StatusPublicField() {}
+    public StatusPublicField() {
+    }
 }

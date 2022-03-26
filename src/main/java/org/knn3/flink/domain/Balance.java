@@ -14,7 +14,7 @@ public class Balance {
     public Balance() {
     }
 
-    public Balance(String token, String address, BigInteger balance,Integer blockNumber) {
+    public Balance(String token, String address, BigInteger balance, Integer blockNumber) {
         this.token = token;
         this.address = address;
         this.balance = balance;

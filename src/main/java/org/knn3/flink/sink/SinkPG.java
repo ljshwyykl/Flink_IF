@@ -4,7 +4,6 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.ibatis.session.SqlSession;
-import org.knn3.flink.Bootstrap;
 import org.knn3.flink.domain.Balance;
 import org.knn3.flink.domain.ImpossibleFinance;
 import org.knn3.flink.utils.MyBatisUtils;
@@ -28,7 +27,7 @@ public class SinkPG extends RichSinkFunction<Balance[]> {
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
         ParameterTool parameter = (ParameterTool)
-                getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+                this.getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
 
 
         this.session = MyBatisUtils.openSession();
@@ -47,7 +46,7 @@ public class SinkPG extends RichSinkFunction<Balance[]> {
 
         List delList = new ArrayList();
         // 遍历数据集合
-        for (Balance balance : value) {
+        for (Balance balance : value)
             if (balance.getBalance().compareTo(new BigInteger(this.ifCondition)) >= 0) {
                 ImpossibleFinance impossibleFinance = new ImpossibleFinance();
                 impossibleFinance.setAddress(balance.getAddress());
@@ -62,24 +61,16 @@ public class SinkPG extends RichSinkFunction<Balance[]> {
                 impossibleFinance.setIfFansTokenThreshold(true);
 
                 insertList.add(impossibleFinance);
-            } else {
-                delList.add(balance.getAddress());
-            }
-
-        }
+            } else delList.add(balance.getAddress());
 
 
-        LOGGER.info("insertList size {}", insertList.size());
-        LOGGER.info("delList size {}", delList.size());
+        SinkPG.LOGGER.info("insertList size {}", insertList.size());
+        SinkPG.LOGGER.info("delList size {}", delList.size());
 
-        if (insertList.size() > 0) {
-            session.insert("impossibleFinance.batchInsert", insertList);
-        }
-        if (delList.size() > 0) {
-            session.delete("impossibleFinance.batchDelete", delList);
-        }
+        if (insertList.size() > 0) this.session.insert("impossibleFinance.batchInsert", insertList);
+        if (delList.size() > 0) this.session.delete("impossibleFinance.batchDelete", delList);
 
 
-        session.commit();//提交事务数据
+        this.session.commit();//提交事务数据
     }
 }

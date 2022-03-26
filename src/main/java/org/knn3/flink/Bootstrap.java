@@ -31,7 +31,7 @@ public class Bootstrap {
 
 
     public static void main(String[] args) throws Exception {
-        LOGGER.info("Bootstrap main");
+        Bootstrap.LOGGER.info("Bootstrap main");
 
         final String fileName = "application.properties";
         // System.out.println("main");
@@ -50,10 +50,10 @@ public class Bootstrap {
                 .database(parameter.get("pg_database")) // monitor postgres database
                 .schemaList(parameter.get("pg_schemaList"))  // monitor inventory schema
                 .tableList(parameter.get("pg_tableList")) // monitor products table
+                .deserializer(new CustomDebeziumDeserializationSchema()) // converts Ò to JSON String
                 .username(parameter.get("pg_username"))
                 .password(parameter.get("pg_password"))
                 .debeziumProperties(properties)
-                .deserializer(new CustomDebeziumDeserializationSchema()) // converts Ò to JSON String
                 // .slotName(parameter.get("pg_slotName"))
                 .build();
 
@@ -94,7 +94,7 @@ public class Bootstrap {
 
                         super.open(parameters);
                         MapStateDescriptor descriptor = new MapStateDescriptor("RepeatMapState", String.class, Boolean.class);
-                        mapState = getRuntimeContext().getMapState(descriptor);
+                        this.mapState = this.getRuntimeContext().getMapState(descriptor);
 
                     }
 
@@ -107,15 +107,13 @@ public class Bootstrap {
 
                         String key = transactionHash + ":" + logIndex.toString();
 
-                        LOGGER.info("key:{}", key);
-                        Boolean state = mapState.get(key);
+                        Bootstrap.LOGGER.info("key:{}", key);
+                        Boolean state = this.mapState.get(key);
 
                         if (state == null) {
-                            mapState.put(key, true);
+                            this.mapState.put(key, true);
                             collector.collect(jsonObject);
-                        } else {
-                            LOGGER.info("id exist::{}", key);
-                        }
+                        } else Bootstrap.LOGGER.info("id exist::{}", key);
                     }
                 })
                 .keyBy(value -> value.getString("address"))
@@ -127,7 +125,7 @@ public class Bootstrap {
                     @Override
                     public void open(Configuration parameters) throws Exception {
                         MapStateDescriptor descriptor = new MapStateDescriptor("MapStateBalance", String.class, BigInteger.class);
-                        mapState = getRuntimeContext().getMapState(descriptor);
+                        this.mapState = this.getRuntimeContext().getMapState(descriptor);
                     }
 
                     @Override
@@ -145,32 +143,28 @@ public class Bootstrap {
 
                         BigInteger value = Numeric.toBigInt((jsonObject.getString("data")));
 //                        System.out.println("map:value:" + value);
-                        LOGGER.info("map:from:{}", from);
-                        LOGGER.info("map:to:{}", to);
-                        LOGGER.info("map:value:{}", value);
+                        Bootstrap.LOGGER.info("map:from:{}", from);
+                        Bootstrap.LOGGER.info("map:to:{}", to);
+                        Bootstrap.LOGGER.info("map:value:{}", value);
 
-                        BigInteger beforeFrom = mapState.get(from);
+                        BigInteger beforeFrom = this.mapState.get(from);
 
                         Balance[] balanceArr = new Balance[2];
 
                         BigInteger calValue;
-                        if (beforeFrom == null) {
-                            calValue = new BigInteger("0").subtract(value);
-                        } else {
+                        if (beforeFrom == null) calValue = new BigInteger("0").subtract(value);
+                        else
                             calValue = beforeFrom.subtract(value);
-                        }
-                        mapState.put(from, calValue);
+                        this.mapState.put(from, calValue);
                         balanceArr[0] = new Balance(token, from, calValue, jsonObject.getInteger("blockNumber"));
 
 
-                        BigInteger beforeTo = mapState.get(to);
-                        if (beforeTo == null) {
-                            calValue = new BigInteger(String.valueOf(value));
-                        } else {
+                        BigInteger beforeTo = this.mapState.get(to);
+                        if (beforeTo == null) calValue = new BigInteger(String.valueOf(value));
+                        else
                             calValue = beforeTo.add(value);
-                        }
 
-                        mapState.put(to, calValue);
+                        this.mapState.put(to, calValue);
                         balanceArr[1] = new Balance(token, to, calValue, jsonObject.getInteger("blockNumber"));
 
 

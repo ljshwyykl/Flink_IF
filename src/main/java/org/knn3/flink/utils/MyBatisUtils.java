@@ -5,15 +5,14 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.knn3.flink.Bootstrap;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 
 public class MyBatisUtils {
     //利用static（静态）属于类不属于对象，且全局唯一，static属性本身就属于全局唯一
     private static SqlSessionFactory sqlSessionFactory = null;
+
     //利用静态块在初始化时实例化sqlSessionFactory
     static {
         Reader reader = null;
@@ -31,22 +30,21 @@ public class MyBatisUtils {
             //初始化遇到错误时，将异常抛给调用者
             throw new ExceptionInInitializerError(e);
         }
-        sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader,"dev");
+        MyBatisUtils.sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader, "dev");
     }
 
     //定义返回SqlSession对象的方法
-    public static SqlSession openSession(){
+    public static SqlSession openSession() {
 
         // 默认SqlSession对自动提交事务数据（commit）
         //设置false代表关闭自动提交，改为手动提交事务
         // return sqlSessionFactory.openSession(false);
 
-        return sqlSessionFactory.openSession(false);
+        return MyBatisUtils.sqlSessionFactory.openSession(false);
     }
+
     //释放SqlSession对象
-    public static void closeSession(SqlSession session){
-        if (session != null) {
-            session.close();
-        }
+    public static void closeSession(SqlSession session) {
+        if (session != null) session.close();
     }
 }
