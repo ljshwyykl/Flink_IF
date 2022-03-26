@@ -3,7 +3,7 @@ package com.knn3.rt.scene.ifcondition.sink;
 import lombok.*;
 
 /**
- * @author zhouyong
+ * @author
  * @ClassName SinkModel
  * @date 2021/10/26
  * @desc 工程介绍

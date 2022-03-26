@@ -19,4 +19,10 @@ public class Cons {
                     // 属性为NULL 不序列化
                     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     ).get();
+
+    public static final String DCP_TABLE = "S_Impossible_Finance";
+    public final static String STATUS_INSERT = "INSERT INTO public.\"F_Status\"(id,address,dcp_table,uid) VALUES(?,?,?,?) ON CONFLICT DO NOTHING;";
+    public final static String STATUS_DELETE = "DELETE FROM public.\"F_Status\" where dcp_table=? and address in(?);";
+    public final static String FINANCE_INSERT = "INSERT INTO public.\"S_Impossible_Finance\"(id,chain_id,contract_id,token_symbol,token_name,address,campaign_id,campaign_name,block_number,if_fans_token_threshold,balance) VALUES(?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT (address) DO UPDATE SET balance = ?;";
+    public final static String FINANCE_DELETE = "DELETE FROM public.\"S_Impossible_Finance\" where address in(?);";
 }

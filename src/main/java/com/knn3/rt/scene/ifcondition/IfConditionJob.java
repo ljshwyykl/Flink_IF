@@ -4,12 +4,17 @@ import com.knn3.rt.scene.ifcondition.deserialization.CDCModel;
 import com.knn3.rt.scene.ifcondition.deserialization.CDCSchema;
 import com.knn3.rt.scene.ifcondition.func.LogConvertFunction;
 import com.knn3.rt.scene.ifcondition.func.TokenCalFunction;
+import com.knn3.rt.scene.ifcondition.model.Balance;
 import com.knn3.rt.scene.ifcondition.model.LogWrapper;
-import com.knn3.rt.scene.ifcondition.sink.MySink;
+import com.knn3.rt.scene.ifcondition.sink.KafkaSink;
+import com.knn3.rt.scene.ifcondition.sink.RDBMSSink;
+import com.knn3.rt.scene.ifcondition.sink.SinkModel;
 import com.knn3.rt.scene.ifcondition.utils.JobUtils;
 import com.ververica.cdc.connectors.postgres.PostgreSQLSource;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.OutputTag;
 
 import java.util.Map;
 import java.util.Properties;
@@ -27,13 +32,14 @@ public class IfConditionJob {
         Map<String, String> paramMap = env.getConfig().getGlobalJobParameters().toMap();
         env.setParallelism(1);
 
-        String appContract = paramMap.get("app_contract");
 
         Properties properties = new Properties();
         properties.setProperty("slot.drop.on.stop", paramMap.get("slot.drop.on.stop"));
         properties.setProperty("snapshot.select.statement.overrides", paramMap.get("snapshot.select.statement.overrides"));
         properties.setProperty(paramMap.get("snapshot.select.statement.overrides.key"), paramMap.get("snapshot.select.statement.overrides.value"));
 
+        OutputTag<SinkModel> financeTag = new OutputTag<SinkModel>("finance-tag") {
+        };
 
         DebeziumSourceFunction<CDCModel> cdcSource = PostgreSQLSource.<CDCModel>builder()
                 .hostname(paramMap.get("pg_hostname"))
@@ -49,13 +55,15 @@ public class IfConditionJob {
                 .decodingPluginName(paramMap.get("plugin.name"))
                 .build();
 
-        env.addSource(cdcSource)
-                .flatMap(new LogConvertFunction(appContract))
+        String ifCondition = paramMap.get("app_if_fans_token_threshold_condition");
+        SingleOutputStreamOperator<Balance[]> balanceStream = env.addSource(cdcSource)
+                .flatMap(new LogConvertFunction(paramMap.get("app_contract")))
                 .keyBy(LogWrapper::getAddress)
-                .process(new TokenCalFunction())
-                .addSink(new MySink());
-        // .map(Cons.MAPPER::writeValueAsString)
-        // .print();
+                .process(new TokenCalFunction(ifCondition, financeTag));
+        // 写数据库
+        balanceStream.addSink(new RDBMSSink(ifCondition));
+        // 写kafka
+        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey("broker", "if_token"));
 
         env.execute(jobName);
     }
