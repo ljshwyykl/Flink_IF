@@ -1,12 +1,17 @@
 package com.knn3.rt.scene.ifcondition.func;
 
+import com.knn3.rt.scene.ifcondition.constant.Cons;
 import com.knn3.rt.scene.ifcondition.model.Balance;
+import com.knn3.rt.scene.ifcondition.model.ImpossibleFinance;
 import com.knn3.rt.scene.ifcondition.model.LogWrapper;
+import com.knn3.rt.scene.ifcondition.service.TransService;
+import com.knn3.rt.scene.ifcondition.sink.SinkModel;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
@@ -20,9 +25,16 @@ import java.util.Optional;
  * @Description 工程描述
  */
 public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, Balance[]> {
+    private final String ifCondition;
+    private final OutputTag<SinkModel> financeTag;
     //之前的操作记录
     private transient MapState<String, Integer> repeatMapState;
     private transient MapState<String, BigInteger> balanceMapState;
+
+    public TokenCalFunction(String ifCondition, OutputTag<SinkModel> financeTag) {
+        this.ifCondition = ifCondition;
+        this.financeTag = financeTag;
+    }
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -58,5 +70,14 @@ public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, B
         this.balanceMapState.put(to, bfFromValue);
 
         collector.collect(arr);
+
+        // 发送kafka
+        for (Balance balance : arr) {
+            ImpossibleFinance finance = TransService.ofFinanceMsg(balance);
+            boolean isInsert = balance.getBalance().compareTo(new BigInteger(this.ifCondition)) >= 0;
+            finance.setFlag(isInsert ? ImpossibleFinance.INSERT : ImpossibleFinance.DELETE);
+            if (!isInsert) finance.setIfFansTokenThreshold(false);
+            context.output(this.financeTag, new SinkModel("" + finance.getBlockNumber(), Cons.MAPPER.writeValueAsString(finance)));
+        }
     }
 }
