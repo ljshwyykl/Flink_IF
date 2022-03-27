@@ -12,6 +12,10 @@ import com.knn3.rt.scene.ifcondition.sink.SinkModel;
 import com.knn3.rt.scene.ifcondition.utils.JobUtils;
 import com.ververica.cdc.connectors.postgres.PostgreSQLSource;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
+<<<<<<< HEAD
+import org.apache.flink.streaming.api.datastream.DataStreamSink;
+=======
+>>>>>>> 2aabdd31ad691ed931e63da44544267e9cde8cdd
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.OutputTag;
@@ -34,12 +38,14 @@ public class IfConditionJob {
 
 
         Properties properties = new Properties();
+
         properties.setProperty("slot.drop.on.stop", paramMap.get("slot.drop.on.stop"));
         properties.setProperty("snapshot.select.statement.overrides", paramMap.get("snapshot.select.statement.overrides"));
         properties.setProperty(paramMap.get("snapshot.select.statement.overrides.key"), paramMap.get("snapshot.select.statement.overrides.value"));
 
         OutputTag<SinkModel> financeTag = new OutputTag<SinkModel>("finance-tag") {
         };
+
 
         DebeziumSourceFunction<CDCModel> cdcSource = PostgreSQLSource.<CDCModel>builder()
                 .hostname(paramMap.get("pg_hostname"))
@@ -54,6 +60,7 @@ public class IfConditionJob {
                 .slotName(paramMap.get("pg_slotName"))
                 .decodingPluginName(paramMap.get("plugin.name"))
                 .build();
+
 
         String ifCondition = paramMap.get("app_if_fans_token_threshold_condition");
         SingleOutputStreamOperator<Balance[]> balanceStream = env.addSource(cdcSource)
