@@ -12,10 +12,6 @@ import com.knn3.rt.scene.ifcondition.sink.SinkModel;
 import com.knn3.rt.scene.ifcondition.utils.JobUtils;
 import com.ververica.cdc.connectors.postgres.PostgreSQLSource;
 import com.ververica.cdc.debezium.DebeziumSourceFunction;
-<<<<<<< HEAD
-import org.apache.flink.streaming.api.datastream.DataStreamSink;
-=======
->>>>>>> 2aabdd31ad691ed931e63da44544267e9cde8cdd
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.OutputTag;
