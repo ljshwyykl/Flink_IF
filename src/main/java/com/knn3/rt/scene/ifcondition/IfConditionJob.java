@@ -63,7 +63,7 @@ public class IfConditionJob {
         // 写数据库
         balanceStream.addSink(new RDBMSSink(ifCondition));
         // 写kafka
-        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey("broker", "if_token"));
+        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic")));
 
         env.execute(jobName);
     }
