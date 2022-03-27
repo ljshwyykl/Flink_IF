@@ -32,7 +32,7 @@ public class KafkaSink {
     private static Properties buildProperties(String brokers) {
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
-        properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
+        // properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
         properties.setProperty(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "10240000");
         properties.setProperty(ProducerConfig.RETRIES_CONFIG, "1000");
         properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "5000");

@@ -67,7 +67,7 @@ public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, B
         arr[1] = new Balance(token, from, bfToValue, blockNumber);
 
         this.balanceMapState.put(from, bfFromValue);
-        this.balanceMapState.put(to, bfFromValue);
+        this.balanceMapState.put(to, bfToValue);
 
         collector.collect(arr);
 
