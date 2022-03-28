@@ -62,9 +62,10 @@ public class IfConditionJob {
                 .keyBy(LogWrapper::getAddress)
                 .process(new TokenCalFunction(ifCondition, financeTag));
         // 写数据库
-        balanceStream.addSink(new RDBMSSink(ifCondition));
+        int dbP = Integer.parseInt(paramMap.getOrDefault("db_p", "" + env.getParallelism()));
+        balanceStream.addSink(new RDBMSSink(ifCondition)).setParallelism(dbP).name("PG");
         // 写kafka
-        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic")));
+        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic"))).name("Kafka");
 
         env.execute(jobName);
     }
