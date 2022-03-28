@@ -49,8 +49,8 @@ public class JobUtils {
         env.setRestartStrategy(RestartStrategies.fixedDelayRestart(60, Time.minutes(1)));
         env.enableCheckpointing(6 * 60 * 1000, CheckpointingMode.AT_LEAST_ONCE);
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(6 * 60 * 1000);
-        env.getCheckpointConfig().setCheckpointTimeout(6 * 60 * 1000);
-        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(5);
+        env.getCheckpointConfig().setCheckpointTimeout(60 * 1000);
+        env.getCheckpointConfig().setTolerableCheckpointFailureNumber(100);
         env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         if (argsParam.getNumberOfParameters() != 0) params = params.mergeWith(argsParam);
         env.getConfig().setUseSnapshotCompression(true);
