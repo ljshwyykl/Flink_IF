@@ -62,7 +62,7 @@ public class IfConditionJob {
                 .keyBy(LogWrapper::getAddress)
                 .process(new TokenCalFunction(ifCondition, financeTag));
         // 写数据库
-        balanceStream.addSink(new RDBMSSink(ifCondition)).setParallelism(2);
+        balanceStream.addSink(new RDBMSSink(ifCondition));
         // 写kafka
         balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic")));
 
