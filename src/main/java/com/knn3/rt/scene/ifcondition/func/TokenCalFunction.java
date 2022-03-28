@@ -64,7 +64,7 @@ public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, B
         arr[0] = new Balance(token, from, bfFromValue, blockNumber);
 
         BigInteger bfToValue = Optional.ofNullable(this.balanceMapState.get(to)).map(x -> x.add(value)).orElseGet(() -> new BigInteger("" + value));
-        arr[1] = new Balance(token, from, bfToValue, blockNumber);
+        arr[1] = new Balance(token, to, bfToValue, blockNumber);
 
         this.balanceMapState.put(from, bfFromValue);
         this.balanceMapState.put(to, bfToValue);
