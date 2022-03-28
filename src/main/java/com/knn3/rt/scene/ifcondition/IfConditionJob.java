@@ -30,8 +30,6 @@ public class IfConditionJob {
         StreamExecutionEnvironment env = JobUtils.getEnv(args);
         String jobName = IfConditionJob.class.getSimpleName();
         Map<String, String> paramMap = env.getConfig().getGlobalJobParameters().toMap();
-        env.setParallelism(1);
-
 
         Properties properties = new Properties();
 
