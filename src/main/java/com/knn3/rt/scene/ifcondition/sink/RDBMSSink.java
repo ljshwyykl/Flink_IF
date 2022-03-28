@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class RDBMSSink extends RichSinkFunction<Balance[]> {
@@ -81,11 +83,6 @@ public class RDBMSSink extends RichSinkFunction<Balance[]> {
                 this.qr.batch(connection, Cons.STATUS_INSERT, args);
             }
 
-            // 批量删除 F_Status
-            if (delList.size() != 0)
-                this.qr.update(connection, Cons.STATUS_DELETE, Cons.DCP_TABLE, String.format("'%s'", String.join("','", delList)));
-
-
             // 批量插入 S_Impossible_Finance
             if (insertList.size() != 0) for (ImpossibleFinance finance : insertList) {
                 Object[] args = new Object[13];
@@ -105,9 +102,15 @@ public class RDBMSSink extends RichSinkFunction<Balance[]> {
                 this.qr.update(connection, Cons.FINANCE_INSERT, args);
             }
 
-            // 批量删除 S_Impossible_Finance
-            if (delList.size() != 0)
-                this.qr.update(connection, Cons.FINANCE_DELETE, String.format("'%s'", String.join("','", delList)));
+            if (delList.size() != 0) {
+                Object[] arr = delList.toArray();
+                // 批量删除 F_Status
+                String delStatusSql = String.format(Cons.STATUS_DELETE, Cons.DCP_TABLE, IntStream.range(0, delList.size()).mapToObj(x -> "?").collect(Collectors.joining(",")));
+                this.qr.update(connection, delStatusSql, arr);
+                // 批量删除 S_Impossible_Finance
+                String delFinanceSql = String.format(Cons.FINANCE_DELETE, IntStream.range(0, delList.size()).mapToObj(x -> "?").collect(Collectors.joining(",")));
+                this.qr.update(connection, delFinanceSql, arr);
+            }
 
             // 提交事务,关闭连接
             DbUtils.commitAndCloseQuietly(connection);
