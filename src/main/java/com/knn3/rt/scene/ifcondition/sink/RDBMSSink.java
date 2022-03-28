@@ -88,7 +88,7 @@ public class RDBMSSink extends RichSinkFunction<Balance[]> {
 
             // 批量插入 S_Impossible_Finance
             if (insertList.size() != 0) for (ImpossibleFinance finance : insertList) {
-                Object[] args = new Object[12];
+                Object[] args = new Object[13];
                 args[0] = UUID.randomUUID();
                 args[1] = finance.getChainId();
                 args[2] = finance.getContractId();
@@ -101,6 +101,7 @@ public class RDBMSSink extends RichSinkFunction<Balance[]> {
                 args[9] = finance.getIfFansTokenThreshold();
                 args[10] = finance.getBalance();
                 args[11] = finance.getBalance();
+                args[12] = finance.getBlockNumber();
                 this.qr.update(connection, Cons.FINANCE_INSERT, args);
             }
 
