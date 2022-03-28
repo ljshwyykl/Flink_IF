@@ -87,24 +87,21 @@ public class RDBMSSink extends RichSinkFunction<Balance[]> {
 
 
             // 批量插入 S_Impossible_Finance
-            if (insertList.size() != 0) {
-                Object[][] args = new Object[insertList.size()][12];
-                for (int i = 0; i < insertList.size(); i++) {
-                    ImpossibleFinance finance = insertList.get(i);
-                    args[i][0] = UUID.randomUUID();
-                    args[i][1] = finance.getChainId();
-                    args[i][2] = finance.getContractId();
-                    args[i][3] = finance.getTokenSymbol();
-                    args[i][4] = finance.getTokenName();
-                    args[i][5] = finance.getAddress();
-                    args[i][6] = finance.getCampaignId();
-                    args[i][7] = finance.getCampaignName();
-                    args[i][8] = finance.getBlockNumber();
-                    args[i][9] = finance.getIfFansTokenThreshold();
-                    args[i][10] = finance.getBalance();
-                    args[i][11] = finance.getBalance();
-                }
-                this.qr.batch(connection, Cons.FINANCE_INSERT, args);
+            if (insertList.size() != 0) for (ImpossibleFinance finance : insertList) {
+                Object[] args = new Object[12];
+                args[0] = UUID.randomUUID();
+                args[1] = finance.getChainId();
+                args[2] = finance.getContractId();
+                args[3] = finance.getTokenSymbol();
+                args[4] = finance.getTokenName();
+                args[5] = finance.getAddress();
+                args[6] = finance.getCampaignId();
+                args[7] = finance.getCampaignName();
+                args[8] = finance.getBlockNumber();
+                args[9] = finance.getIfFansTokenThreshold();
+                args[10] = finance.getBalance();
+                args[11] = finance.getBalance();
+                this.qr.update(connection, Cons.FINANCE_INSERT, args);
             }
 
             // 批量删除 S_Impossible_Finance
