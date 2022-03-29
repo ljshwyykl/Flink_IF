@@ -77,7 +77,7 @@ public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, B
             boolean isInsert = balance.getBalance().compareTo(new BigInteger(this.ifCondition)) >= 0;
             finance.setFlag(isInsert ? ImpossibleFinance.INSERT : ImpossibleFinance.DELETE);
             if (!isInsert) finance.setIfFansTokenThreshold(false);
-            context.output(this.financeTag, new SinkModel("" + finance.getBlockNumber(), Cons.MAPPER.writeValueAsString(finance)));
+            context.output(this.financeTag, new SinkModel(finance.getCampaignId(), Cons.MAPPER.writeValueAsString(finance)));
         }
     }
 }
