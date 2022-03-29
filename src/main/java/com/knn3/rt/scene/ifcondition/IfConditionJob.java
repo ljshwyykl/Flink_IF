@@ -58,14 +58,13 @@ public class IfConditionJob {
 
         String ifCondition = paramMap.get("app_if_fans_token_threshold_condition");
         SingleOutputStreamOperator<Balance[]> balanceStream = env.addSource(cdcSource)
-                .flatMap(new LogConvertFunction(paramMap.get("app_contract"))).setParallelism(1)
+                .flatMap(new LogConvertFunction(paramMap.get("app_contract")))
                 .keyBy(LogWrapper::getAddress)
-                .process(new TokenCalFunction(ifCondition, financeTag)).setParallelism(1);
+                .process(new TokenCalFunction(ifCondition, financeTag));
         // 写数据库
-        int dbP = Integer.parseInt(paramMap.getOrDefault("db_p", "" + env.getParallelism()));
-        balanceStream.addSink(new RDBMSSink(ifCondition)).setParallelism(dbP).name("PG");
+        balanceStream.addSink(new RDBMSSink(ifCondition)).name("PG");
         // 写kafka
-        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic"))).name("Kafka").setParallelism(1);
+        balanceStream.getSideOutput(financeTag).addSink(KafkaSink.sinkWithKey(paramMap.get("kafka_brokers"), paramMap.get("kafka_topic"))).name("Kafka");
 
         env.execute(jobName);
     }
