@@ -52,9 +52,9 @@ public class TokenCalFunction extends KeyedProcessFunction<String, LogWrapper, B
         this.repeatMapState.put(key, 1);
 
         List<String> topics = logWrapper.getTopics();
-        String from = "0x" + topics.get(1).substring(26);
-        String to = "0x" + topics.get(2).substring(26);
-        String token = logWrapper.getAddress();
+        String from = "0x" + topics.get(1).substring(26).toLowerCase();
+        String to = "0x" + topics.get(2).substring(26).toLowerCase();
+        String token = logWrapper.getAddress().toLowerCase();
         BigInteger value = Numeric.toBigInt(logWrapper.getData());
         Integer blockNumber = logWrapper.getBlockNumber();
 

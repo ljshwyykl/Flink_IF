@@ -51,10 +51,10 @@ public class SinkPG extends RichSinkFunction<Balance[]> {
                 ImpossibleFinance impossibleFinance = new ImpossibleFinance();
                 impossibleFinance.setAddress(balance.getAddress());
                 impossibleFinance.setChainId("56");
-                impossibleFinance.setContractId("0xB0e1fc65C1a741b4662B813eB787d369b8614Af1");
+                impossibleFinance.setContractId("0xB0e1fc65C1a741b4662B813eB787d369b8614Af1".toLowerCase());
                 impossibleFinance.setTokenSymbol("IF");
                 impossibleFinance.setTokenName("Impossible Finance");
-                impossibleFinance.setCampaignId("0xB0e1fc65C1a741b4662B813eB787d369b8614Af1");
+                impossibleFinance.setCampaignId("0xB0e1fc65C1a741b4662B813eB787d369b8614Af1".toLowerCase());
                 impossibleFinance.setCampaignName("S_Impossible_Finance");
                 impossibleFinance.setBlockNumber(balance.getBlockNumber());
                 impossibleFinance.setBalance(balance.getBalance());

@@ -24,7 +24,7 @@ public class TransService {
     }
 
     public static ImpossibleFinance ofFinanceMsg(Balance balance) {
-        String contractId = "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1";
+        String contractId = "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1".toLowerCase();
         ImpossibleFinance finance = new ImpossibleFinance();
         finance.setId(UUID.randomUUID());
         finance.setAddress(balance.getAddress());
